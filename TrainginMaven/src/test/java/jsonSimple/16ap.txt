@@ -1,0 +1,73 @@
+
+ LoggingPreferences logPrefs = new LoggingPreferences();
+         logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
+         options.setCapability("goog:loggingPrefs", logPrefs); 
+        WebDriverManager.chromedriver().setup();
+         driver = new ChromeDriver(options);
+         driver.manage().window().maximize();
+***********************************
+        List<LogEntry> logs = driver.manage().logs().get(LogType.PERFORMANCE).getAll();        
+ allrequests.logs=new ArrayList();        
+ allrequests.logs.addAll(logs);     
+    int status = -1;      
+   String url = null;
+        for (Iterator<LogEntry> it = logs.iterator(); it.hasNext();)        
+ {             LogEntry entry = it.next(); 
+//            System.out.println(entry.getMessage());       
+      JSONObject json = new JSONObject(entry.getMessage());        
+     JSONObject message = json.getJSONObject("message");             
+String method = message.getString("method");                    
+   if (method != null && "Network.responseReceived".equals(method))           
+  {                 JSONObject params = message.getJSONObject("params");
+                JSONObject response = params.getJSONObject("response");              
+   String messageUrl = response.getString("url");                 int flag=1;               
+  for(int i=0;i<text.length;i++)           
+      {       if(!messageUrl.contains(text[i]))
+                     {        flag=0;
+                              break;
+           }                 } 
+                if (flag==1)
+ //                if (messageUrl.contains("request_type"))
+ //                if (messageUrl.contains("2020-09-19"))               
+  {                     status = response.getInt("status");
+                    //System.out.println();                                       
+   url=messageUrl;                  
+   //System.out.println("Checking "+url);                    
+ main_url=url;                 }             }         }      
+   /*if (url != null)
+ {             return url;        
+ } else {             throw new Exception("URL was null.");         }*/      
+   return url;
+***********************************************************
+public String getReposne(String paramer){
+        List<LogEntry> logs = driver.manage().logs().get(LogType.PERFORMANCE).getAll();
+                  int status = -1;
+         String url = null;
+        for (Iterator<LogEntry> it = logs.iterator(); it.hasNext();)
+         {             LogEntry entry = it.next();
+ //            System.out.println(entry.getMessage());
+             JSONObject json = new JSONObject(entry.getMessage()); 
+            JSONObject message = json.getJSONObject("message");
+             String method = message.getString("method");   
+                    if (method != null && "Network.responseReceived".equals(method)) 
+            {                 JSONObject params = message.getJSONObject("params");
+                JSONObject response = params.getJSONObject("response");
+                String messageUrl = response.getString("url"); 
+                int flag=1;
+                 for(int i=0;i<text.length;i++)
+                 {                                         
+                    if(!messageUrl.contains(text[i]))
+                     {                         flag=0;
+                                                break;                     }                 }                 
+                  if (flag==1) 
+//                if (messageUrl.contains("request_type")) 
+//                if (messageUrl.contains("2020-09-19"))  
+               {                     status = response.getInt("status");
+                    //System.out.println();                                        
+                       url=messageUrl;
+                     //System.out.println("Checking "+url);
+                     main_url=url;                 }             }         }        
+ /*if (url != null) 
+{             return url;        
+ } else {             throw new Exception("URL was null.");         }*/     
+    return url; }
